@@ -5,14 +5,22 @@ import Header from './components/Header'
 import ToyForm from './components/ToyForm'
 import ToyContainer from './components/ToyContainer'
 
-import data from './data'
 
 
 class App extends React.Component{
 
   state = {
-    display: false
+    display: false,
+    data: []
   }
+
+  fetchToys = () => {
+    fetch(`http://localhost:3000/toys`)
+    .then(r => r.json())
+    .then(data => this.setState({data: data}))
+  }
+
+  componentDidMount() {this.fetchToys()}
 
   handleClick = () => {
     let newBoolean = !this.state.display
@@ -21,20 +29,24 @@ class App extends React.Component{
     })
   }
 
+  appHandler = () => {
+    this.fetchToys()
+  }
+
   render(){
     return (
       <>
         <Header/>
         { this.state.display
             ?
-          <ToyForm/>
+          <ToyForm appHandler={this.appHandler}/>
             :
           null
         }
         <div className="buttonContainer">
           <button onClick={this.handleClick}> Add a Toy </button>
         </div>
-        <ToyContainer/>
+        <ToyContainer appHandler={this.appHandler} toyData={this.state.data}/>
       </>
     );
   }
